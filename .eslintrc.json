@@ -41,7 +41,8 @@
         "ts": "never",
         "tsx": "neves"
       }
-    ]
+    ],
+    "@typescript-eslint/camelcase": "error", "properties": "never"
   },
   "settings": {
     "import/resolver": {
