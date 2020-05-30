@@ -1,4 +1,5 @@
 import React, { useState, useEffect, FormEvent } from 'react';
+import { Link } from 'react-router-dom';
 import { FiChevronRight } from 'react-icons/fi';
 
 import api from '../../services/api';
@@ -18,17 +19,21 @@ const Dashboard: React.FC = () => {
   const [newRepository, setNewRepository] = useState('');
   const [inputError, setInputError] = useState('');
   const [repositories, setRepositories] = useState<Repository[]>(() => {
-    const storageRepositories = localStorage.getItem('@GithubExplorer:repositories');
+    const storageRepositories = localStorage.getItem(
+      '@GithubExplorer:repositories',
+    );
 
     if (storageRepositories) {
       return JSON.parse(storageRepositories);
-    } else {
-      return [];
     }
+    return [];
   });
 
   useEffect(() => {
-    localStorage.setItem('@GithubExplorer:repositories', JSON.stringify(repositories))
+    localStorage.setItem(
+      '@GithubExplorer:repositories',
+      JSON.stringify(repositories),
+    );
   }, [repositories]);
 
   async function handleAddRepository(
@@ -42,14 +47,12 @@ const Dashboard: React.FC = () => {
     }
 
     try {
-
       const response = await api.get<Repository>(`repos/${newRepository}`);
       const repository = response.data;
 
       setRepositories([...repositories, repository]);
       setNewRepository('');
       setInputError('');
-
     } catch (error) {
       setInputError('Repositório não encontrado.');
     }
@@ -73,21 +76,22 @@ const Dashboard: React.FC = () => {
       {inputError && <Error>{inputError}</Error>}
 
       <Repositories>
-        {repositories.map(repository => (
-          <a key={repository.full_name} href="teste">
+        {repositories.map((repository) => (
+          <Link
+            key={repository.full_name}
+            to={`/repository/${repository.full_name}`}
+          >
             <img
               src={repository.owner.avatar_url}
               alt={repository.owner.login}
             />
             <div>
               <strong>{repository.full_name}</strong>
-              <p>
-                {repository.description}
-              </p>
+              <p>{repository.description}</p>
             </div>
 
             <FiChevronRight size={32} color="#aaaaaa" />
-          </a>
+          </Link>
         ))}
       </Repositories>
     </>
